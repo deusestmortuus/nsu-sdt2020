@@ -23,8 +23,9 @@
 
 (defn my-filter-ls [mini-block-size block-size pred coll]
   (->>
-    (block-delimiter block-size coll)                       ;((1 2 3 4 5) (6 7 8 9 10))
-    (map #(block-delimiter mini-block-size %))              ;((1 2 3) (4 5))
+    coll
+    (block-delimiter mini-block-size)
+    (block-delimiter block-size)
     (mapcat #((my-filter pred) %))))
 
 (defn main []
