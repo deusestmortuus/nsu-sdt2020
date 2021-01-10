@@ -180,5 +180,29 @@
       (reduce #(apply disjunction (glue %1 %2)) args))
     :else expr))
 
+(defn simple [expr]
+  (cond
+    (disjunction? expr)
+    (apply disjunction (reduce #(if (disjunction? %2) (concat %1 (rest %2)) (cons %2 %1)) (cons '() (distinct (map simple (rest expr))))))
+
+    (conjunction? expr)
+    (apply conjunction (reduce #(if (conjunction? %2) (concat %1 (rest %2)) (cons %2 %1)) (cons '() (distinct (map simple (rest expr))))))
+    :else expr))
+
 (defn dnf [expr]
-  (distribution_law (element_wise_invert (simplification expr))))
+  (simple (distribution_law (simple (element_wise_invert (simplification expr))))))
+
+;(println "Изначальное выражение:   " (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))
+;(println)
+;(println "Должно получиться: " (invert (disjunction (disjunction (invert (variable :x)) (variable :y)) (invert (disjunction (invert (variable :y)) (variable :z))))))
+;(println)
+;(println "Получилось:   " (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z)))))))
+;(println (= (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z)))))) (invert (disjunction (disjunction (invert (variable :x)) (variable :y)) (invert (disjunction (invert (variable :y)) (variable :z)))))))
+;
+;(println "Получилось   " (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))))
+;(println "Должно пол   " (conjunction (conjunction (variable :x) (invert (variable :y))) (disjunction (invert (variable :y)) (variable :z))))
+;(println (= (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))) (conjunction (conjunction (variable :x) (invert (variable :y))) (disjunction (invert (variable :y)) (variable :z)))))
+;
+;(println "Получилось   " (simple (distribution_law (simple (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z)))))))))))
+;(println "Должно пол   " (disjunction (conjunction (variable :x) (invert (variable :y))) (conjunction (variable :x) (invert (variable :y)) (variable :z))))
+;(println (= (simple (distribution_law (simple (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z)))))))))) (disjunction (conjunction (variable :x) (invert (variable :y))) (conjunction (variable :x) (invert (variable :y)) (variable :z)))))
