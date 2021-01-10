@@ -39,8 +39,17 @@
     (test/is (= (distribution_law (conjunction (disjunction (variable :z) (invert (variable :y))) (invert (variable :y)) (variable :x)))
                 (disjunction (conjunction (conjunction (variable :z) (invert (variable :y))) (variable :x)) (conjunction (conjunction (invert (variable :y)) (invert (variable :y))) (variable :x)))))
 
-    (test/is (= (dnf (conjunction (disjunction (variable :z) (invert (variable :y))) (invert (variable :y)) (variable :x)))
-                (disjunction (conjunction (conjunction (variable :z) (invert (variable :y))) (variable :x)) (conjunction (conjunction (invert (variable :y)) (invert (variable :y))) (variable :x)))))
+    (test/is (= (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))
+                (invert (disjunction (disjunction (invert (variable :x)) (variable :y)) (invert (disjunction (invert (variable :y)) (variable :z)))))))
+
+    (test/is (= (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z)))))))
+                (conjunction (conjunction (variable :x) (invert (variable :y))) (disjunction (invert (variable :y)) (variable :z)))))
+
+    (test/is (= (simple (distribution_law (simple (element_wise_invert (simplification (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))))))
+                (disjunction (conjunction (variable :x) (invert (variable :y))) (conjunction (variable :x) (invert (variable :y)) (variable :z)))))
+
+    (test/is (= (dnf (invert (disjunction (implication (variable :x) (variable :y)) (invert (implication (variable :y) (variable :z))))))
+                (disjunction (conjunction (variable :x) (invert (variable :y))) (conjunction (variable :x) (invert (variable :y)) (variable :z)))))
     ))
 
 (test/run-tests 'lab4.testlab4)
