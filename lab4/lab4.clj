@@ -76,7 +76,7 @@
       (constant (every? true? (map constant-value res)))
       (if (some #(and (constant? %) (not (constant-value %))) res)
         (constant false)
-        (conjunction res)))))
+        (apply conjunction res)))))
 
 (defn calculate_disjunction [expr var value]
   (let [res (map #(calculate % var value) (rest expr))]
@@ -84,7 +84,7 @@
       (constant (boolean (some true? (map constant-value res))))
       (if (some #(and (constant? %) (constant-value %)) res)
         (constant true)
-        (disjunction res)))
+        (apply disjunction res)))
     ))
 
 (defn calculate_invert [expr var value]
